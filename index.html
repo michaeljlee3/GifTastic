@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+
+<html lang="en-us">
+
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    </head>
+
+    <style>
+        #buttons{
+        height: 100px;
+        margin: 20px auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        }
+
+        #main-container {
+            width: 80%;
+            margin: 0 auto;
+        }
+
+        #input {
+            margin-bottom: 5px;
+        }
+
+        .title {
+            display: block;
+            text-align: center;
+        }
+
+        img {
+            display: block;
+            margin: auto;
+        }
+
+        #inputs {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #inputBar {
+            display: inline-block;
+        }
+        
+        #add-btn {
+            width: 100px;
+        }
+        
+        #buttons-section {
+            display: inline-block;
+        }
+
+        .btn {
+            margin-bottom: 5px;
+        }
+        
+    </style>
+
+    <body>
+        <div id='main-container'>
+
+            <div id='buttons'><section id="buttons-section"></section></div>
+
+            <div class='row' id='inputs'>
+                <section id='inputBar'>
+                    <strong id='addSport'>Add Sport: </strong>
+                    <input id='input'> <button id='add-btn' class="btn btn-primary">Add</button>
+                </section>
+                
+            </div>
+
+            <div class='row'>
+                <section class='col-sm-4' id='displayLeft'></section>
+                <section class='col-sm-4' id='displayCenter'></section>
+                <section class='col-sm-4' id='displayRight'></section>
+                
+            </div>
+
+        </div>
+    </body>
+
+    <script>
+
+        var topics = ["Basketball", "Soccer", "Football", "Baseball"];
+        var limit = 10;
+        
+
+
+        function displayBtn() {
+            $('#buttons-section').html('')
+            for (var i = 0; i < topics.length; i++) {
+            $('#buttons-section').append("<button class='btn btn-success added-btn'>" + topics[i] + "</button> ")
+            }
+        } displayBtn();
+
+        function checkArr(x) { 
+            for (var i = 0; i < topics.length; i++){
+                if (x == topics[i]) {
+                    return 1
+                }
+            }
+        };
+
+        $('#add-btn').click(function(x) {
+
+            var btnValue = $("#input").val();
+            
+            if (btnValue == "") {
+                alert("Please enter in value")
+            } else if (checkArr(btnValue) == 1) {
+                alert("That button is already there. Please enter a different value.")
+            } else {
+                topics.push(btnValue);
+                displayBtn();
+            };
+        
+        });
+        
+        $(document).on('click','.added-btn', function() {
+            
+            $('#displayLeft').html('');
+            $('#displayRight').html('');
+            $('#displayCenter').html('');
+
+            var val = $(this).text()
+            var queryURL = "http://api.giphy.com/v1/gifs/search?q=" + val + "&rating&api_key=BpxgLCQuqnCN5YKSHW9vdpBdpsvKGVFV&limit=12"
+            
+            
+            $.ajax({
+                url: queryURL,
+                method: 'GET'
+            }) .then(function(response){
+
+                console.log(queryURL);
+                console.log(response);
+                
+                for (var i = 0; i < response.data.length; i+=3){
+                    $('#displayLeft').append("<strong class='title'>Rating: " + response.data[i].rating + "</strong><img src='" + response.data[i].images.fixed_height.url +  "'><br><br> ")
+                };
+
+                for (var i = 1; i < response.data.length; i+=3){
+                    $('#displayCenter').append("<strong class='title'>Rating: " + response.data[i].rating +"</strong><img src='" + response.data[i].images.fixed_height.url + "'><br><br> ")
+                };
+
+                for (var i = 2; i < response.data.length; i+=3){
+                    $('#displayRight').append("<strong class='title'>Rating: " + response.data[i].rating +"</strong><img src='" + response.data[i].images.fixed_height.url + "'><br><br> ")
+                };
+                
+            });
+        });
+        
+        $(document).on('mouseenter', 'img', function(){
+            
+        })  
+
+    </script>
+    
+</html>
