@@ -86,9 +86,9 @@
     <script>
 
         var topics = ["Basketball", "Soccer", "Football", "Baseball"];
-        var limit = 10;
-        
-
+        var limit = 12;
+        var imgArr = [];
+        var gifArr =[];
 
         function displayBtn() {
             $('#buttons-section').html('')
@@ -100,7 +100,7 @@
         function checkArr(x) { 
             for (var i = 0; i < topics.length; i++){
                 if (x == topics[i]) {
-                    return 1
+                    return true
                 }
             }
         };
@@ -111,7 +111,7 @@
             
             if (btnValue == "") {
                 alert("Please enter in value")
-            } else if (checkArr(btnValue) == 1) {
+            } else if (checkArr(btnValue) == true) {
                 alert("That button is already there. Please enter a different value.")
             } else {
                 topics.push(btnValue);
@@ -125,9 +125,11 @@
             $('#displayLeft').html('');
             $('#displayRight').html('');
             $('#displayCenter').html('');
-
-            var val = $(this).text()
-            var queryURL = "http://api.giphy.com/v1/gifs/search?q=" + val + "&rating&api_key=BpxgLCQuqnCN5YKSHW9vdpBdpsvKGVFV&limit=12"
+            imgArr.splice(0, limit);
+            gifArr.splice(0, limit);
+            
+            var val = $(this).text();
+            var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + val + "&rating&api_key=BpxgLCQuqnCN5YKSHW9vdpBdpsvKGVFV&limit=" + limit;
             
             
             $.ajax({
@@ -138,25 +140,35 @@
                 console.log(queryURL);
                 console.log(response);
                 
-                for (var i = 0; i < response.data.length; i+=3){
-                    $('#displayLeft').append("<strong class='title'>Rating: " + response.data[i].rating + "</strong><img src='" + response.data[i].images.fixed_height.url +  "'><br><br> ")
+                for (var i = 0; i < limit; i++) {
+                    imgArr.push(response.data[i].images.fixed_height_still.url)
+                };
+
+                for (var i = 0; i < limit; i++) {
+                    gifArr.push(response.data[i].images.fixed_height.url)
+                };
+
+                for (var i = 0; i < imgArr.length; i+=3){
+                    $('#displayLeft').append("<strong class='title'>Rating: " + response.data[i].rating + "</strong><img src='" + gifArr[i] +  "' data-index=" + [i] +"><br><br> ")
                 };
 
                 for (var i = 1; i < response.data.length; i+=3){
-                    $('#displayCenter').append("<strong class='title'>Rating: " + response.data[i].rating +"</strong><img src='" + response.data[i].images.fixed_height.url + "'><br><br> ")
+                    $('#displayCenter').append("<strong class='title'>Rating: " + response.data[i].rating +"</strong><img src='" + gifArr[i] + "' data-index=" + [i] +"><br><br> ")
                 };
 
                 for (var i = 2; i < response.data.length; i+=3){
-                    $('#displayRight').append("<strong class='title'>Rating: " + response.data[i].rating +"</strong><img src='" + response.data[i].images.fixed_height.url + "'><br><br> ")
+                    $('#displayRight').append("<strong class='title'>Rating: " + response.data[i].rating +"</strong><img src='" + gifArr[i] + "' data-index=" + [i] +"><br><br> ")
                 };
                 
             });
         });
         
-        $(document).on('mouseenter', 'img', function(){
-            
-        })  
+        /*$(document).on('mouseenter', 'img', function(){
+            var index = $(this).data('index');
+            $(this).replaceWith("<img src='" + gifArr[index] + "'>");
+        }) */
 
     </script>
     
 </html>
+
